@@ -11,15 +11,14 @@ find_package(Threads)
 find_package(OpenMP)
 find_package(Vulkan REQUIRED)
 
-find_package(glslang QUIET)
+find_package(glslang)
 if(glslang_FOUND)
     add_library(glslang ALIAS glslang::glslang)
     add_library(SPIRV ALIAS glslang::SPIRV)
-else()
-    if (NOT TARGET glslang OR NOT TARGET SPIRV)
-        message(WARNING "glslang or SPIRV target not found! USE_SYSTEM_NCNN will be turned off.")
-        set(USE_SYSTEM_NCNN OFF)
-    endif()
+endif()
+if (NOT TARGET glslang OR NOT TARGET SPIRV)
+    message(WARNING "glslang or SPIRV target not found! USE_SYSTEM_NCNN will be turned off.")
+    set(USE_SYSTEM_NCNN OFF)
 endif()
 
 # check glslangValidator
@@ -41,6 +40,12 @@ macro(compile_shader SHADER_SRC)
     set_source_files_properties(${SHADER_SPV_HEX_FILE} PROPERTIES GENERATED TRUE)
     list(APPEND SHADER_SPV_HEX_FILES ${SHADER_SPV_HEX_FILE})
 endmacro()
+
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 # enable global link time optimization
 cmake_policy(SET CMP0069 NEW)
