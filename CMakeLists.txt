@@ -5,6 +5,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE release CACHE STRING "Choose the type of build" FORCE)
 endif()
 
+option(USE_SYSTEM_NCNN "build with system libncnn" OFF)
+
 find_package(Threads)
 find_package(OpenMP)
 find_package(Vulkan REQUIRED)
