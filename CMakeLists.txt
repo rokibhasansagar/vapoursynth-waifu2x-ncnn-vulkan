@@ -15,10 +15,15 @@ find_package(glslang QUIET)
 if(glslang_FOUND)
     add_library(glslang ALIAS glslang::glslang)
     add_library(SPIRV ALIAS glslang::SPIRV)
+else()
+    if (NOT TARGET glslang OR NOT TARGET SPIRV)
+        message(WARNING "glslang or SPIRV target not found! USE_SYSTEM_NCNN will be turned off.")
+        set(USE_SYSTEM_NCNN OFF)
+    endif()
 endif()
 
 # check glslangValidator
-find_program(GLSLANGVALIDATOR_EXECUTABLE NAMES glslangValidator PATHS $ENV{VULKAN_SDK}/bin NO_CMAKE_FIND_ROOT_PATH)
+find_program(GLSLANGVALIDATOR_EXECUTABLE NAMES glslangValidator NO_CMAKE_FIND_ROOT_PATH)
 message(STATUS "Found glslangValidator: ${GLSLANGVALIDATOR_EXECUTABLE}")
 
 macro(compile_shader SHADER_SRC)
